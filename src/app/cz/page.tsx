@@ -145,7 +145,7 @@ export default function CzechTroll() {
   };
 
   return (
-    <main className="relative min-h-screen overflow-hidden cursor-none">
+    <main className="relative min-h-screen overflow-hidden selection:bg-blue-500 selection:text-white">
       {/* Czech Flag Background */}
       <div 
         className="fixed inset-0 z-0"
@@ -182,16 +182,6 @@ export default function CzechTroll() {
           >
             PRAVDA VÍTĚZÍ
           </motion.h1>
-
-          <motion.p
-            initial={{ opacity: 0 }}
-            animate={{ opacity: 1 }}
-            transition={{ delay: 0.8 }}
-            className="mt-4 text-lg md:text-xl lg:text-2xl text-white/90 font-medium"
-            style={{ textShadow: "2px 2px 4px rgba(0,0,0,0.8)" }}
-          >
-            Truth Prevails
-          </motion.p>
         </div>
 
         {/* iPhone - Right Side */}
@@ -307,32 +297,20 @@ export default function CzechTroll() {
 
       {/* Cursor Trail - Czech Flags */}
       {trail.map((flag) => (
-        <motion.div
+        <motion.img
           key={flag.id}
-          initial={{ scale: 1, opacity: 1 }}
+          src="https://upload.wikimedia.org/wikipedia/commons/thumb/c/cb/Flag_of_the_Czech_Republic.svg/330px-Flag_of_the_Czech_Republic.svg.png"
+          alt="CZ"
+          initial={{ scale: 1, opacity: 0.8 }}
           animate={{ scale: 0, opacity: 0 }}
           transition={{ duration: 0.8 }}
-          className="fixed pointer-events-none z-50 text-2xl md:text-3xl"
+          className="fixed pointer-events-none z-50 w-8 h-5 md:w-10 md:h-6"
           style={{
             left: flag.x - 15,
-            top: flag.y - 15,
+            top: flag.y - 10,
           }}
-        >
-          🇨🇿
-        </motion.div>
+        />
       ))}
-
-      {/* Custom Cursor - Czech Flag */}
-      <motion.div
-        className="fixed pointer-events-none z-[100] text-4xl"
-        animate={{
-          x: trail[trail.length - 1]?.x ? trail[trail.length - 1].x - 20 : -100,
-          y: trail[trail.length - 1]?.y ? trail[trail.length - 1].y - 20 : -100,
-        }}
-        transition={{ type: "spring", damping: 30, stiffness: 300 }}
-      >
-        🇨🇿
-      </motion.div>
 
       {/* Beer Pop-ups on Click */}
       <AnimatePresence>
