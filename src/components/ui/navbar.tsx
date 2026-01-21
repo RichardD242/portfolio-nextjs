@@ -2,6 +2,7 @@
 
 import * as React from "react"
 import clsx from 'clsx'
+import { Menu, X } from 'lucide-react'
 
 interface NavButton {
   className?: string
@@ -58,6 +59,7 @@ export function Navbar({
   rightContent,
 }: NavbarProps) {
   const [isScrolled, setIsScrolled] = React.useState(false)
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = React.useState(false)
 
   React.useEffect(() => {
     const handleScroll = () => {
@@ -67,11 +69,22 @@ export function Navbar({
     return () => window.removeEventListener('scroll', handleScroll)
   }, [])
 
+  // Close mobile menu on resize
+  React.useEffect(() => {
+    const handleResize = () => {
+      if (window.innerWidth >= 768) {
+        setIsMobileMenuOpen(false)
+      }
+    }
+    window.addEventListener('resize', handleResize)
+    return () => window.removeEventListener('resize', handleResize)
+  }, [])
+
   return (
     <header
       className={clsx(
         'fixed top-0 left-0 right-0 z-50 transition-all duration-300',
-        isScrolled 
+        isScrolled || isMobileMenuOpen
           ? 'bg-black/80 backdrop-blur-md border-b border-gray-800' 
           : 'bg-transparent',
         className
@@ -86,7 +99,7 @@ export function Navbar({
             )}
           </div>
 
-          {/* Navigation */}
+          {/* Desktop Navigation */}
           <nav className="hidden md:block">
             <ul className="flex items-center gap-x-8">
               {menuItems.map(({ to, text }, index) => (
@@ -102,11 +115,38 @@ export function Navbar({
             </ul>
           </nav>
 
-          {/* Right Content */}
+          {/* Right Content + Mobile Menu Button */}
           <div className="flex items-center gap-x-4">
             {rightContent}
+            {/* Mobile Menu Button */}
+            <button
+              onClick={() => setIsMobileMenuOpen(!isMobileMenuOpen)}
+              className="md:hidden p-2 text-white hover:text-cyan-400 transition-colors"
+              aria-label="Toggle menu"
+            >
+              {isMobileMenuOpen ? <X className="w-6 h-6" /> : <Menu className="w-6 h-6" />}
+            </button>
           </div>
         </div>
+
+        {/* Mobile Navigation */}
+        {isMobileMenuOpen && (
+          <nav className="md:hidden mt-4 pb-4">
+            <ul className="flex flex-col gap-y-4">
+              {menuItems.map(({ to, text }, index) => (
+                <li key={index}>
+                  <a
+                    href={to}
+                    onClick={() => setIsMobileMenuOpen(false)}
+                    className="block text-lg text-gray-300 hover:text-cyan-400 transition-colors py-2"
+                  >
+                    {text}
+                  </a>
+                </li>
+              ))}
+            </ul>
+          </nav>
+        )}
       </div>
     </header>
   )

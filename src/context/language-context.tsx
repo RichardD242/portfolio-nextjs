@@ -47,7 +47,7 @@ const translations: Translations = {
   contact: "Kontakt",
   home: "Startseite",
   about: "Über mich",
-  footer: "© 2025 Richard Daubner. Tschechien 🇨🇿",
+  footer: "© 2025 Richard Daubner",
 };
 
 interface LanguageContextType {
