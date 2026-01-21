@@ -15,11 +15,82 @@ interface Beer {
   y: number;
 }
 
+interface Notification {
+  id: number;
+  sender: string;
+  message: string;
+  avatar: string;
+}
+
+const spanishMessages = [
+  "¡Hola amigo! ¿Cómo estás?",
+  "¡Viva la República Checa!",
+  "¿Quieres una cerveza? 🍺",
+  "¡Praga es la ciudad más bonita!",
+  "¡Me encanta el fútbol checo!",
+  "¿Dónde está la biblioteca?",
+  "¡Necesito más svíčková!",
+  "¡El kozel es fantástico!",
+  "¡Buenos días desde Praga!",
+  "¿Tienes tiempo para hablar?",
+  "¡La verdad prevalece siempre!",
+  "¡Vamos a celebrar!",
+  "¿Has visto mi castillo?",
+  "¡Que tengas un buen día!",
+  "¡Me gustan los knedlíky!",
+];
+
 export default function CzechTroll() {
   const [trail, setTrail] = useState<TrailFlag[]>([]);
   const [beers, setBeers] = useState<Beer[]>([]);
   const [trailId, setTrailId] = useState(0);
   const [beerId, setBeerId] = useState(0);
+  const [currentTime, setCurrentTime] = useState(new Date());
+  const [notifications, setNotifications] = useState<Notification[]>([]);
+  const [notifId, setNotifId] = useState(0);
+
+  // Update time every second
+  useEffect(() => {
+    const timer = setInterval(() => setCurrentTime(new Date()), 1000);
+    return () => clearInterval(timer);
+  }, []);
+
+  // Random notifications from Petr Pavel and Andrej Babiš
+  useEffect(() => {
+    const sendNotification = () => {
+      const senders = [
+        { name: "Petr Pavel 🇨🇿", avatar: "https://upload.wikimedia.org/wikipedia/commons/thumb/8/84/Petr_Pavel_2023.jpg/220px-Petr_Pavel_2023.jpg" },
+        { name: "Andrej Babiš 💼", avatar: "https://upload.wikimedia.org/wikipedia/commons/thumb/6/6f/Andrej_Babi%C5%A1_2022.jpg/220px-Andrej_Babi%C5%A1_2022.jpg" },
+      ];
+      const sender = senders[Math.floor(Math.random() * senders.length)];
+      const message = spanishMessages[Math.floor(Math.random() * spanishMessages.length)];
+      
+      const newNotif: Notification = {
+        id: notifId,
+        sender: sender.name,
+        message: message,
+        avatar: sender.avatar,
+      };
+      
+      setNotifId(prev => prev + 1);
+      setNotifications(prev => [newNotif, ...prev].slice(0, 5));
+
+      // Remove after 8 seconds
+      setTimeout(() => {
+        setNotifications(prev => prev.filter(n => n.id !== newNotif.id));
+      }, 8000);
+    };
+
+    // First notification after 2 seconds
+    const firstTimer = setTimeout(sendNotification, 2000);
+    // Then every 3-5 seconds
+    const interval = setInterval(sendNotification, 3000 + Math.random() * 2000);
+    
+    return () => {
+      clearTimeout(firstTimer);
+      clearInterval(interval);
+    };
+  }, [notifId]);
 
   // Cursor trail effect
   const handleMouseMove = useCallback((e: MouseEvent) => {
@@ -65,6 +136,14 @@ export default function CzechTroll() {
     return () => clearInterval(interval);
   }, []);
 
+  const formatTime = (date: Date) => {
+    return date.toLocaleTimeString('cs-CZ', { hour: '2-digit', minute: '2-digit' });
+  };
+
+  const formatDate = (date: Date) => {
+    return date.toLocaleDateString('cs-CZ', { weekday: 'long', day: 'numeric', month: 'long' });
+  };
+
   return (
     <main className="relative min-h-screen overflow-hidden cursor-none">
       {/* Czech Flag Background */}
@@ -78,44 +157,156 @@ export default function CzechTroll() {
         }}
       />
 
-      {/* Content */}
-      <div className="relative z-10 min-h-screen flex flex-col items-center justify-center p-8">
-        {/* Coat of Arms */}
-        <motion.img
-          src="https://upload.wikimedia.org/wikipedia/commons/thumb/e/ed/Coat_of_arms_of_the_Czech_Republic.svg/500px-Coat_of_arms_of_the_Czech_Republic.svg.png"
-          alt="Czech Coat of Arms"
-          initial={{ scale: 0, rotate: -180 }}
-          animate={{ scale: 1, rotate: 0 }}
-          transition={{ type: "spring", damping: 15, stiffness: 100 }}
-          className="w-64 h-64 md:w-96 md:h-96 drop-shadow-2xl"
-        />
+      {/* Content - Left Side */}
+      <div className="relative z-10 min-h-screen flex flex-col lg:flex-row items-center justify-center p-8">
+        <div className="flex-1 flex flex-col items-center justify-center">
+          {/* Coat of Arms */}
+          <motion.img
+            src="https://upload.wikimedia.org/wikipedia/commons/thumb/e/ed/Coat_of_arms_of_the_Czech_Republic.svg/500px-Coat_of_arms_of_the_Czech_Republic.svg.png"
+            alt="Czech Coat of Arms"
+            initial={{ scale: 0, rotate: -180 }}
+            animate={{ scale: 1, rotate: 0 }}
+            transition={{ type: "spring", damping: 15, stiffness: 100 }}
+            className="w-48 h-48 md:w-64 md:h-64 lg:w-80 lg:h-80 drop-shadow-2xl"
+          />
 
-        {/* Motto */}
-        <motion.h1
-          initial={{ opacity: 0, y: 50 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.5 }}
-          className="mt-8 text-4xl md:text-6xl font-black text-white text-center"
-          style={{ 
-            textShadow: "4px 4px 0 #11457E, -2px -2px 0 #D7141A, 2px -2px 0 #11457E, -2px 2px 0 #D7141A",
-          }}
-        >
-          PRAVDA VÍTĚZÍ
-        </motion.h1>
+          {/* Motto */}
+          <motion.h1
+            initial={{ opacity: 0, y: 50 }}
+            animate={{ opacity: 1, y: 0 }}
+            transition={{ delay: 0.5 }}
+            className="mt-8 text-3xl md:text-5xl lg:text-6xl font-black text-white text-center"
+            style={{ 
+              textShadow: "4px 4px 0 #11457E, -2px -2px 0 #D7141A, 2px -2px 0 #11457E, -2px 2px 0 #D7141A",
+            }}
+          >
+            PRAVDA VÍTĚZÍ
+          </motion.h1>
 
-        <motion.p
-          initial={{ opacity: 0 }}
-          animate={{ opacity: 1 }}
-          transition={{ delay: 0.8 }}
-          className="mt-4 text-xl md:text-2xl text-white/90 font-medium"
-          style={{ textShadow: "2px 2px 4px rgba(0,0,0,0.8)" }}
+          <motion.p
+            initial={{ opacity: 0 }}
+            animate={{ opacity: 1 }}
+            transition={{ delay: 0.8 }}
+            className="mt-4 text-lg md:text-xl lg:text-2xl text-white/90 font-medium"
+            style={{ textShadow: "2px 2px 4px rgba(0,0,0,0.8)" }}
+          >
+            Truth Prevails
+          </motion.p>
+        </div>
+
+        {/* iPhone - Right Side */}
+        <motion.div 
+          className="flex-1 flex items-center justify-center mt-8 lg:mt-0"
+          initial={{ x: 100, opacity: 0 }}
+          animate={{ x: 0, opacity: 1 }}
+          transition={{ delay: 0.3, type: "spring", damping: 20 }}
         >
-          Truth Prevails
-        </motion.p>
+          {/* iPhone Frame */}
+          <div className="relative w-[280px] h-[580px] md:w-[320px] md:h-[660px] lg:w-[380px] lg:h-[780px]">
+            {/* Phone Body - Liquid Glass Effect */}
+            <div 
+              className="absolute inset-0 rounded-[50px] md:rounded-[55px] lg:rounded-[60px] overflow-hidden"
+              style={{
+                background: "linear-gradient(145deg, rgba(255,255,255,0.4) 0%, rgba(255,255,255,0.1) 50%, rgba(255,255,255,0.3) 100%)",
+                backdropFilter: "blur(40px)",
+                WebkitBackdropFilter: "blur(40px)",
+                boxShadow: `
+                  0 0 0 1px rgba(255,255,255,0.3),
+                  0 25px 50px -12px rgba(0,0,0,0.5),
+                  inset 0 1px 1px rgba(255,255,255,0.4),
+                  inset 0 -1px 1px rgba(0,0,0,0.1)
+                `,
+                border: "1px solid rgba(255,255,255,0.2)",
+              }}
+            >
+              {/* Inner Bezel */}
+              <div className="absolute inset-[8px] md:inset-[10px] lg:inset-[12px] rounded-[42px] md:rounded-[45px] lg:rounded-[48px] overflow-hidden bg-black">
+                {/* Czech Flag Wallpaper */}
+                <div 
+                  className="absolute inset-0"
+                  style={{
+                    backgroundImage: "url('https://upload.wikimedia.org/wikipedia/commons/thumb/c/cb/Flag_of_the_Czech_Republic.svg/330px-Flag_of_the_Czech_Republic.svg.png')",
+                    backgroundSize: "cover",
+                    backgroundPosition: "center",
+                  }}
+                />
+                
+                {/* Glassmorphism Overlay */}
+                <div className="absolute inset-0 bg-black/20 backdrop-blur-[2px]" />
+
+                {/* Dynamic Island */}
+                <div className="absolute top-4 left-1/2 -translate-x-1/2 w-28 md:w-32 lg:w-36 h-8 md:h-9 lg:h-10 bg-black rounded-full flex items-center justify-center">
+                  <div className="w-2 h-2 rounded-full bg-gray-800 mr-2" />
+                  <div className="w-3 h-3 rounded-full bg-gray-900 border border-gray-700" />
+                </div>
+
+                {/* Time & Date */}
+                <div className="absolute top-20 md:top-24 lg:top-28 left-0 right-0 text-center">
+                  <motion.p 
+                    className="text-6xl md:text-7xl lg:text-8xl font-thin text-white"
+                    style={{ textShadow: "0 2px 10px rgba(0,0,0,0.5)" }}
+                  >
+                    {formatTime(currentTime)}
+                  </motion.p>
+                  <p className="text-lg md:text-xl lg:text-2xl text-white/80 mt-2 capitalize">
+                    {formatDate(currentTime)}
+                  </p>
+                </div>
+
+                {/* Notifications */}
+                <div className="absolute top-48 md:top-56 lg:top-64 left-3 right-3 space-y-2 md:space-y-3">
+                  <AnimatePresence>
+                    {notifications.map((notif) => (
+                      <motion.div
+                        key={notif.id}
+                        initial={{ x: 300, opacity: 0, scale: 0.8 }}
+                        animate={{ x: 0, opacity: 1, scale: 1 }}
+                        exit={{ x: -300, opacity: 0, scale: 0.8 }}
+                        transition={{ type: "spring", damping: 20, stiffness: 200 }}
+                        className="p-3 md:p-4 rounded-2xl md:rounded-3xl"
+                        style={{
+                          background: "linear-gradient(135deg, rgba(255,255,255,0.9) 0%, rgba(255,255,255,0.7) 100%)",
+                          backdropFilter: "blur(20px)",
+                          WebkitBackdropFilter: "blur(20px)",
+                          boxShadow: "0 8px 32px rgba(0,0,0,0.2), inset 0 1px 1px rgba(255,255,255,0.8)",
+                        }}
+                      >
+                        <div className="flex items-start gap-2 md:gap-3">
+                          <img 
+                            src={notif.avatar} 
+                            alt={notif.sender}
+                            className="w-10 h-10 md:w-12 md:h-12 rounded-full object-cover border-2 border-white shadow-md"
+                          />
+                          <div className="flex-1 min-w-0">
+                            <p className="font-semibold text-gray-900 text-sm md:text-base truncate">
+                              {notif.sender}
+                            </p>
+                            <p className="text-gray-700 text-xs md:text-sm leading-tight">
+                              {notif.message}
+                            </p>
+                          </div>
+                        </div>
+                      </motion.div>
+                    ))}
+                  </AnimatePresence>
+                </div>
+
+                {/* Home Indicator */}
+                <div className="absolute bottom-2 left-1/2 -translate-x-1/2 w-32 md:w-36 lg:w-40 h-1 bg-white/50 rounded-full" />
+              </div>
+            </div>
+
+            {/* Side Buttons */}
+            <div className="absolute left-0 top-32 w-1 h-8 bg-gray-400 rounded-l-full" />
+            <div className="absolute left-0 top-44 w-1 h-12 bg-gray-400 rounded-l-full" />
+            <div className="absolute left-0 top-60 w-1 h-12 bg-gray-400 rounded-l-full" />
+            <div className="absolute right-0 top-40 w-1 h-16 bg-gray-400 rounded-r-full" />
+          </div>
+        </motion.div>
       </div>
 
       {/* Cursor Trail - Czech Flags */}
-      {trail.map((flag, index) => (
+      {trail.map((flag) => (
         <motion.div
           key={flag.id}
           initial={{ scale: 1, opacity: 1 }}
