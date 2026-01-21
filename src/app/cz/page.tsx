@@ -1,150 +1,172 @@
 "use client";
 
-import { motion } from "framer-motion";
-import { useEffect, useState } from "react";
+import { motion, AnimatePresence } from "framer-motion";
+import { useEffect, useState, useCallback } from "react";
+
+interface TrailFlag {
+  id: number;
+  x: number;
+  y: number;
+}
+
+interface Beer {
+  id: number;
+  x: number;
+  y: number;
+}
 
 export default function CzechTroll() {
-  const [showSecret, setShowSecret] = useState(false);
+  const [trail, setTrail] = useState<TrailFlag[]>([]);
+  const [beers, setBeers] = useState<Beer[]>([]);
+  const [trailId, setTrailId] = useState(0);
+  const [beerId, setBeerId] = useState(0);
+
+  // Cursor trail effect
+  const handleMouseMove = useCallback((e: MouseEvent) => {
+    const newFlag: TrailFlag = {
+      id: trailId,
+      x: e.clientX,
+      y: e.clientY,
+    };
+    setTrailId(prev => prev + 1);
+    setTrail(prev => [...prev.slice(-20), newFlag]);
+  }, [trailId]);
+
+  // Click to spawn beer
+  const handleClick = useCallback((e: MouseEvent) => {
+    const newBeer: Beer = {
+      id: beerId,
+      x: e.clientX,
+      y: e.clientY,
+    };
+    setBeerId(prev => prev + 1);
+    setBeers(prev => [...prev, newBeer]);
+
+    // Remove beer after animation
+    setTimeout(() => {
+      setBeers(prev => prev.filter(b => b.id !== newBeer.id));
+    }, 2000);
+  }, [beerId]);
 
   useEffect(() => {
-    // Play Czech anthem or sound effect (optional)
-    const timer = setTimeout(() => setShowSecret(true), 2000);
-    return () => clearTimeout(timer);
+    window.addEventListener('mousemove', handleMouseMove);
+    window.addEventListener('click', handleClick);
+    return () => {
+      window.removeEventListener('mousemove', handleMouseMove);
+      window.removeEventListener('click', handleClick);
+    };
+  }, [handleMouseMove, handleClick]);
+
+  // Clean up old trail flags
+  useEffect(() => {
+    const interval = setInterval(() => {
+      setTrail(prev => prev.slice(-15));
+    }, 100);
+    return () => clearInterval(interval);
   }, []);
 
-  const czechFacts = [
-    "🍺 Czechs drink the most beer per capita in the world!",
-    "🏰 Prague Castle is the largest ancient castle in the world!",
-    "🤖 The word 'Robot' was invented by a Czech!",
-    "🍖 Svíčková is the best food ever created!",
-    "🎭 Czechs invented contact lenses!",
-    "⚽ Czech Republic = Football legends!",
-    "🎪 Pilsner beer was invented in Plzeň!",
-    "🦆 Czechs love their Kachna (duck)!",
-  ];
-
   return (
-    <main className="relative min-h-screen overflow-hidden">
+    <main className="relative min-h-screen overflow-hidden cursor-none">
       {/* Czech Flag Background */}
-      <div className="fixed inset-0 z-0">
-        {/* White top */}
-        <div className="absolute top-0 left-0 right-0 h-1/2 bg-white" />
-        {/* Red bottom */}
-        <div className="absolute bottom-0 left-0 right-0 h-1/2 bg-[#D7141A]" />
-        {/* Blue triangle */}
-        <div 
-          className="absolute left-0 top-0 bottom-0 w-1/2"
-          style={{
-            background: "linear-gradient(to right bottom, #11457E 50%, transparent 50%), linear-gradient(to right top, #11457E 50%, transparent 50%)",
-          }}
-        />
-        <svg className="absolute left-0 top-0 h-full" viewBox="0 0 50 100" preserveAspectRatio="none">
-          <polygon points="0,0 50,50 0,100" fill="#11457E" />
-        </svg>
-      </div>
+      <div 
+        className="fixed inset-0 z-0"
+        style={{
+          backgroundImage: "url('https://upload.wikimedia.org/wikipedia/commons/thumb/c/cb/Flag_of_the_Czech_Republic.svg/330px-Flag_of_the_Czech_Republic.svg.png')",
+          backgroundSize: "cover",
+          backgroundPosition: "center",
+          backgroundRepeat: "no-repeat",
+        }}
+      />
 
       {/* Content */}
       <div className="relative z-10 min-h-screen flex flex-col items-center justify-center p-8">
-        {/* Giant Flag Emoji */}
-        <motion.div
+        {/* Coat of Arms */}
+        <motion.img
+          src="https://upload.wikimedia.org/wikipedia/commons/thumb/e/ed/Coat_of_arms_of_the_Czech_Republic.svg/500px-Coat_of_arms_of_the_Czech_Republic.svg.png"
+          alt="Czech Coat of Arms"
           initial={{ scale: 0, rotate: -180 }}
           animate={{ scale: 1, rotate: 0 }}
-          transition={{ type: "spring", damping: 10, stiffness: 100 }}
-          className="text-[150px] md:text-[250px] mb-8"
-        >
-          🇨🇿
-        </motion.div>
+          transition={{ type: "spring", damping: 15, stiffness: 100 }}
+          className="w-64 h-64 md:w-96 md:h-96 drop-shadow-2xl"
+        />
 
-        {/* Title */}
+        {/* Motto */}
         <motion.h1
           initial={{ opacity: 0, y: 50 }}
           animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.3 }}
-          className="text-4xl md:text-7xl font-black text-center mb-4"
+          transition={{ delay: 0.5 }}
+          className="mt-8 text-4xl md:text-6xl font-black text-white text-center"
           style={{ 
-            textShadow: "3px 3px 0 #11457E, -3px -3px 0 #D7141A",
-            color: "white"
+            textShadow: "4px 4px 0 #11457E, -2px -2px 0 #D7141A, 2px -2px 0 #11457E, -2px 2px 0 #D7141A",
           }}
         >
-          ČESKÁ REPUBLIKA!
+          PRAVDA VÍTĚZÍ
         </motion.h1>
 
         <motion.p
           initial={{ opacity: 0 }}
           animate={{ opacity: 1 }}
-          transition={{ delay: 0.5 }}
-          className="text-2xl md:text-4xl font-bold text-[#11457E] bg-white/90 px-6 py-2 rounded-full mb-12"
+          transition={{ delay: 0.8 }}
+          className="mt-4 text-xl md:text-2xl text-white/90 font-medium"
+          style={{ textShadow: "2px 2px 4px rgba(0,0,0,0.8)" }}
         >
-          🍺 Na zdraví! 🍺
+          Truth Prevails
         </motion.p>
-
-        {/* Fun Facts */}
-        <motion.div
-          initial={{ opacity: 0, y: 50 }}
-          animate={{ opacity: 1, y: 0 }}
-          transition={{ delay: 0.7 }}
-          className="grid grid-cols-1 md:grid-cols-2 gap-4 max-w-4xl"
-        >
-          {czechFacts.map((fact, index) => (
-            <motion.div
-              key={index}
-              initial={{ opacity: 0, x: index % 2 === 0 ? -50 : 50 }}
-              animate={{ opacity: 1, x: 0 }}
-              transition={{ delay: 0.8 + index * 0.1 }}
-              className="bg-white/95 backdrop-blur-sm p-4 rounded-xl shadow-lg border-2 border-[#11457E]"
-            >
-              <p className="text-lg font-medium text-gray-800">{fact}</p>
-            </motion.div>
-          ))}
-        </motion.div>
-
-        {/* Secret Message */}
-        {showSecret && (
-          <motion.div
-            initial={{ opacity: 0, scale: 0.5 }}
-            animate={{ opacity: 1, scale: 1 }}
-            className="mt-12 text-center"
-          >
-            <p className="text-xl md:text-2xl font-bold text-white bg-[#D7141A] px-8 py-4 rounded-full shadow-xl">
-              🎉 You found the secret page! 🎉
-            </p>
-            <motion.a
-              href="/"
-              whileHover={{ scale: 1.05 }}
-              whileTap={{ scale: 0.95 }}
-              className="inline-block mt-6 px-6 py-3 bg-[#11457E] text-white font-semibold rounded-full hover:bg-[#0d3a6b] transition-colors"
-            >
-              ← Back to Portfolio
-            </motion.a>
-          </motion.div>
-        )}
-
-        {/* Floating Beer Emojis */}
-        {[...Array(10)].map((_, i) => (
-          <motion.div
-            key={i}
-            className="fixed text-4xl md:text-6xl pointer-events-none"
-            initial={{ 
-              x: Math.random() * (typeof window !== 'undefined' ? window.innerWidth : 1000), 
-              y: -100,
-              rotate: 0 
-            }}
-            animate={{ 
-              y: typeof window !== 'undefined' ? window.innerHeight + 100 : 1000,
-              rotate: 360 
-            }}
-            transition={{ 
-              duration: 5 + Math.random() * 5,
-              repeat: Infinity,
-              delay: Math.random() * 5,
-              ease: "linear"
-            }}
-            style={{ left: `${Math.random() * 100}%` }}
-          >
-            🍺
-          </motion.div>
-        ))}
       </div>
+
+      {/* Cursor Trail - Czech Flags */}
+      {trail.map((flag, index) => (
+        <motion.div
+          key={flag.id}
+          initial={{ scale: 1, opacity: 1 }}
+          animate={{ scale: 0, opacity: 0 }}
+          transition={{ duration: 0.8 }}
+          className="fixed pointer-events-none z-50 text-2xl md:text-3xl"
+          style={{
+            left: flag.x - 15,
+            top: flag.y - 15,
+          }}
+        >
+          🇨🇿
+        </motion.div>
+      ))}
+
+      {/* Custom Cursor - Czech Flag */}
+      <motion.div
+        className="fixed pointer-events-none z-[100] text-4xl"
+        animate={{
+          x: trail[trail.length - 1]?.x ? trail[trail.length - 1].x - 20 : -100,
+          y: trail[trail.length - 1]?.y ? trail[trail.length - 1].y - 20 : -100,
+        }}
+        transition={{ type: "spring", damping: 30, stiffness: 300 }}
+      >
+        🇨🇿
+      </motion.div>
+
+      {/* Beer Pop-ups on Click */}
+      <AnimatePresence>
+        {beers.map((beer) => (
+          <motion.img
+            key={beer.id}
+            src="https://www.gmoakeller.at/wp-content/uploads/2021/01/Velkopopovicky%CC%81-Kozel_Gmoakeller_Wien.jpg"
+            alt="Czech Beer"
+            initial={{ scale: 0, rotate: -20, opacity: 1 }}
+            animate={{ 
+              scale: [0, 1.2, 1],
+              rotate: [0, 10, -5, 0],
+              y: [0, -50, -100],
+              opacity: [1, 1, 0]
+            }}
+            exit={{ scale: 0, opacity: 0 }}
+            transition={{ duration: 2, ease: "easeOut" }}
+            className="fixed pointer-events-none z-40 w-24 h-32 md:w-32 md:h-40 object-contain rounded-lg shadow-xl"
+            style={{
+              left: beer.x - 48,
+              top: beer.y - 64,
+            }}
+          />
+        ))}
+      </AnimatePresence>
     </main>
   );
 }
