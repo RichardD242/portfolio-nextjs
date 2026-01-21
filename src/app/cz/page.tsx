@@ -23,21 +23,21 @@ interface Notification {
 }
 
 const spanishMessages = [
-  "¡Hola amigo! ¿Cómo estás?",
-  "¡Viva la República Checa!",
-  "¿Quieres una cerveza? 🍺",
-  "¡Praga es la ciudad más bonita!",
-  "¡Me encanta el fútbol checo!",
-  "¿Dónde está la biblioteca?",
-  "¡Necesito más svíčková!",
-  "¡El kozel es fantástico!",
-  "¡Buenos días desde Praga!",
-  "¿Tienes tiempo para hablar?",
-  "¡La verdad prevalece siempre!",
-  "¡Vamos a celebrar!",
-  "¿Has visto mi castillo?",
-  "¡Que tengas un buen día!",
-  "¡Me gustan los knedlíky!",
+  "⚠️ WARNING: Pay your taxes immediately!",
+  "🚨 URGENT: You owe 50,000 Kč!",
+  "💰 Your bank account will be frozen!",
+  "🏦 Czech Tax Authority needs you!",
+  "⚠️ Final warning before prosecution!",
+  "📝 Sign these documents NOW!",
+  "🚔 Police is on the way!",
+  "💸 Transfer 10,000 Kč to avoid jail!",
+  "🏛️ Report to Prague Castle immediately!",
+  "🚨 Your passport has been revoked!",
+  "⚠️ Agrofert needs your support!",
+  "📊 Your taxes are wrong. Again.",
+  "🏠 We're taking your house!",
+  "👮‍♂️ Come to the police station!",
+  "💳 Your card is blocked!",
 ];
 
 export default function CzechTroll() {
@@ -59,8 +59,8 @@ export default function CzechTroll() {
   useEffect(() => {
     const sendNotification = () => {
       const senders = [
-        { name: "Petr Pavel 🇨🇿", avatar: "https://upload.wikimedia.org/wikipedia/commons/thumb/8/84/Petr_Pavel_2023.jpg/220px-Petr_Pavel_2023.jpg" },
-        { name: "Andrej Babiš 💼", avatar: "https://upload.wikimedia.org/wikipedia/commons/thumb/6/6f/Andrej_Babi%C5%A1_2022.jpg/220px-Andrej_Babi%C5%A1_2022.jpg" },
+        { name: "Petr Pavel 🇨🇿", avatar: "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcSLcPQqxp8PvMoTFsYJ6hE2fz5ZPAtYwiKIpl8MuT3IDXKf__dlusKbhVMjvgSNXhGPS4nFyP-Kiokl0CwLHsGNsbikgJkRBDqFS0Et4A" },
+        { name: "Andrej Babiš 💼", avatar: "https://encrypted-tbn2.gstatic.com/licensed-image?q=tbn:ANd9GcT5HfEQUCpXp8WGqtESi-zlEggQI5boVXNCuNKqmQtc_v3N92QOF2TxoWi0agirMaIERkX6zo4JrwYBmCI" },
       ];
       const sender = senders[Math.floor(Math.random() * senders.length)];
       const message = spanishMessages[Math.floor(Math.random() * spanishMessages.length)];
@@ -215,7 +215,7 @@ export default function CzechTroll() {
                 <div 
                   className="absolute inset-0"
                   style={{
-                    backgroundImage: "url('https://upload.wikimedia.org/wikipedia/commons/thumb/c/cb/Flag_of_the_Czech_Republic.svg/330px-Flag_of_the_Czech_Republic.svg.png')",
+                    backgroundImage: "url('https://t3.ftcdn.net/jpg/00/57/76/46/360_F_57764640_A8JUBsgeSl5p5n10UD43vkOgw02mu7Wu.jpg')",
                     backgroundSize: "cover",
                     backgroundPosition: "center",
                   }}
@@ -299,18 +299,35 @@ export default function CzechTroll() {
       {trail.map((flag) => (
         <motion.img
           key={flag.id}
-          src="https://upload.wikimedia.org/wikipedia/commons/thumb/c/cb/Flag_of_the_Czech_Republic.svg/330px-Flag_of_the_Czech_Republic.svg.png"
-          alt="CZ"
-          initial={{ scale: 1, opacity: 0.8 }}
-          animate={{ scale: 0, opacity: 0 }}
-          transition={{ duration: 0.8 }}
-          className="fixed pointer-events-none z-50 w-8 h-5 md:w-10 md:h-6"
+          src="https://upload.wikimedia.org/wikipedia/commons/thumb/c/cb/Flag_of_the_Czech_Republic.svg/250px-Flag_of_the_Czech_Republic.svg.png"
+          alt="Czech Flag"
+          initial={{ scale: 1, opacity: 0.9, rotate: 0 }}
+          animate={{ scale: 0.3, opacity: 0, rotate: 15 }}
+          transition={{ duration: 1 }}
+          className="fixed pointer-events-none z-50"
           style={{
-            left: flag.x - 15,
-            top: flag.y - 10,
+            left: flag.x - 20,
+            top: flag.y - 12,
+            width: '40px',
+            height: '26px',
           }}
         />
       ))}
+
+      {/* Main cursor flag that follows mouse */}
+      {trail.length > 0 && (
+        <motion.img
+          src="https://upload.wikimedia.org/wikipedia/commons/thumb/c/cb/Flag_of_the_Czech_Republic.svg/250px-Flag_of_the_Czech_Republic.svg.png"
+          alt="Cursor Flag"
+          className="fixed pointer-events-none z-[100]"
+          style={{
+            left: trail[trail.length - 1]?.x - 25 || -100,
+            top: trail[trail.length - 1]?.y - 15 || -100,
+            width: '50px',
+            height: '32px',
+          }}
+        />
+      )}
 
       {/* Beer Pop-ups on Click */}
       <AnimatePresence>
