@@ -16,6 +16,10 @@ const geistMono = Geist_Mono({
 export const metadata: Metadata = {
   title: "Richard Daubner | Portfolio",
   description: "Student & Tech Enthusiast - Building modern digital experiences",
+  icons: {
+    icon: "https://avatars.githubusercontent.com/u/209126641?v=4",
+    apple: "https://avatars.githubusercontent.com/u/209126641?v=4",
+  },
 };
 
 export default function RootLayout({
