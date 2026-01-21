@@ -57,10 +57,10 @@ export default function UeberMich() {
           {/* Bild rechts */}
           <div className="flex-1 flex justify-center lg:justify-end">
             <div className="relative">
-              <div className="w-72 h-72 md:w-80 md:h-80 lg:w-96 lg:h-96 rounded-2xl overflow-hidden border-2 border-white/20">
+              <div className="w-72 h-72 md:w-80 md:h-80 lg:w-96 lg:h-96 rounded-2xl overflow-hidden border-2 border-white/20 shadow-2xl shadow-white/10">
                 <img
-                  src="/profile.jpg"
-                  alt="Profilbild"
+                  src="https://avatars.githubusercontent.com/u/209126641?v=4"
+                  alt="Richard Daubner"
                   className="w-full h-full object-cover"
                 />
               </div>
